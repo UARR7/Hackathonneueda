@@ -7,14 +7,13 @@ function FormPage() {
     age: '',
     gender: '',
     income: '',
-    totalExpense: 0,
+    totalExpense: '',
     debt: '',
     creditScore: '',
     savings: '',
   });
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
-
-  console.log('Rendering FormPage with formData:', formData);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,21 +26,52 @@ function FormPage() {
       age: '',
       gender: '',
       income: '',
-      totalExpense: 0,
+      totalExpense: '',
       debt: '',
       creditScore: '',
       savings: '',
     });
+    setErrorMessage('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    navigate('/summary', { state: formData });
+
+    const requestData = {
+      id: formData.username,
+      name: formData.username,
+      income: Number(formData.income),
+      expenses: Number(formData.totalExpense),
+      debt: Number(formData.debt),
+      savings: Number(formData.savings),
+      creditUtilization: Number(formData.creditScore),
+    };
+
+    try {
+      const response = await fetch('http://localhost:5001/api/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch data from backend');
+      }
+
+      const responseData = await response.json();
+      navigate('/summary', { state: responseData }); // Pass response data to SummaryPage
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setErrorMessage('An error occurred while submitting the form. Please try again later.');
+    }
   };
 
   return (
     <div className="container" style={{ backgroundColor: 'blue', color: 'white', padding: '20px' }}>
       <h1>Financial Form</h1>
+      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       <form onSubmit={handleSubmit}>
         {/* Username */}
         <label>Username:</label>
@@ -66,7 +96,7 @@ function FormPage() {
 
         {/* Total Expense */}
         <label>Total Expense:</label>
-        <input type="number" name="totalExpense" value={formData.totalExpense} readOnly />
+        <input type="number" name="totalExpense" value={formData.totalExpense} onChange={handleChange} required />
 
         {/* Debt */}
         <label>Debt:</label>

@@ -3,8 +3,8 @@ import { useLocation } from 'react-router-dom';
 
 function SummaryPage() {
   const location = useLocation();
-  console.log('Rendering SummaryPage with data:', location.state?.expenseBreakdown);
-  const expenseBreakdown = location.state?.expenseBreakdown || {}; // Fallback to an empty object
+  const data = location.state || {};
+  const expenseBreakdown = data.expenseBreakdown || {}; // Fallback to an empty object
   const canvasRef = useRef(null);
 
   const totalExpense = Object.values(expenseBreakdown).reduce((acc, curr) => acc + curr, 0);
@@ -71,7 +71,8 @@ function SummaryPage() {
       ) : (
         <p>No data available to display.</p>
       )}
-      <p>Suggestion: Suggestion</p>
+      <p><strong>Risk Score:</strong> {data.riskScore || 'N/A'}</p>
+      <p><strong>Suggestions:</strong> {data.suggestions?.join(', ') || 'No suggestions available.'}</p>
     </div>
   );
 }
