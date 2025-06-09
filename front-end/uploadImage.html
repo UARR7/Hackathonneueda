@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        .error {
+            color: red;
+        }
+        .analysis-section {
+            margin-bottom: 10px;
+        }
+        .analysis-section h3 {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Image</h1>
+        <form id="uploadForm">
+            <input type="file" id="imageInput" name="image" accept="image/*" required>
+            <button type="submit">Submit</button>
+        </form>
+        <div id="responseContainer" class="response" style="display: none;"></div>
+        <div id="errorContainer" class="error" style="display: none;"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('uploadForm');
+        const responseContainer = document.getElementById('responseContainer');
+        const errorContainer = document.getElementById('errorContainer');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            responseContainer.style.display = 'none';
+            errorContainer.style.display = 'none';
+
+            const imageInput = document.getElementById('imageInput');
+            if (!imageInput.files.length) {
+                errorContainer.textContent = 'Please select an image to upload.';
+                errorContainer.style.display = 'block';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', imageInput.files[0]);
+
+            try {
+                const response = await fetch('api/chartPrediction', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                if (data.success) {
+                    displayAnalysis(data.analysis);
+                } else {
+                    throw new Error('Failed to analyze the chart.');
+                }
+            } catch (error) {
+                errorContainer.textContent = error.message;
+                errorContainer.style.display = 'block';
+            }
+        });
+
+        function displayAnalysis(analysis) {
+            responseContainer.innerHTML = `
+                <div class="analysis-section">
+                    <h3>Stock Info:</h3>
+                    <p>Ticker: ${analysis.stockInfo.ticker}</p>
+                    <p>Timeframe: ${analysis.stockInfo.timeframe}</p>
+                    <p>Current Price: ${analysis.stockInfo.currentPrice}</p>
+                    <p>Price Change: ${analysis.stockInfo.priceChange}</p>
+                </div>
+                <div class="analysis-section">
+                    <h3>Technical Analysis:</h3>
+                    <p>Trend: ${analysis.technicalAnalysis.trend}</p>
+                    <p>Patterns: ${analysis.technicalAnalysis.patterns.join(', ')}</p>
+                    <p>Support Levels: ${analysis.technicalAnalysis.supportLevels.join(', ')}</p>
+                    <p>Resistance Levels: ${analysis.technicalAnalysis.resistanceLevels.join(', ')}</p>
+                    <p>Volume Analysis: ${analysis.technicalAnalysis.volumeAnalysis}</p>
+                    <p>Momentum: ${analysis.technicalAnalysis.momentum}</p>
+                </div>
+                <div class="analysis-section">
+                    <h3>Macroeconomic Context:</h3>
+                    <p>Economic Factors: ${analysis.macroeconomicContext.economicFactors.join(', ')}</p>
+                    <p>Interest Rate Impact: ${analysis.macroeconomicContext.interestRateImpact}</p>
+                    <p>Inflation Impact: ${analysis.macroeconomicContext.inflationImpact}</p>
+                    <p>Sector Outlook: ${analysis.macroeconomicContext.sectorOutlook}</p>
+                </div>
+                <div class="analysis-section">
+                    <h3>Political Context:</h3>
+                    <p>Policy Impacts: ${analysis.politicalContext.policyImpacts.join(', ')}</p>
+                    <p>Regulatory Environment: ${analysis.politicalContext.regulatoryEnvironment}</p>
+                    <p>Political Risks: ${analysis.politicalContext.politicalRisks.join(', ')}</p>
+                    <p>Trade Policy: ${analysis.politicalContext.tradePolicy}</p>
+                </div>
+                <div class="analysis-section">
+                    <h3>Risk Assessment:</h3>
+                    <p>Overall Risk: ${analysis.riskAssessment.overallRisk}</p>
+                    <p>Key Risks: ${analysis.riskAssessment.keyRisks.join(', ')}</p>
+                    <p>Volatility Expectation: ${analysis.riskAssessment.volatilityExpectation}</p>
+                    <p>Time Horizon Recommendation: ${analysis.riskAssessment.timeHorizonRecommendation}</p>
+                </div>
+                <div class="analysis-section">
+                    <h3>Recommendation:</h3>
+                    <p>Action: ${analysis.recommendation.action}</p>
+                    <p>Confidence: ${analysis.recommendation.confidence}</p>
+                    <p>Reasoning: ${analysis.recommendation.reasoning}</p>
+                    <p>Target Price: ${analysis.recommendation.targetPrice}</p>
+                    <p>Stop Loss: ${analysis.recommendation.stopLoss}</p>
+                </div>
+                <div class="analysis-section">
+                    <h3>Additional Notes:</h3>
+                    <p>${analysis.additionalNotes}</p>
+                </div>
+            `;
+            responseContainer.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
