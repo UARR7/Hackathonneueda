@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financial Form</title>
+  <style>
+    /* Basic styling */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      margin-top: 10px;
+    }
+    input, select, button {
+      margin-top: 5px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 15px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Financial Form</h1>
+    <form id="financialForm">
+      <!-- Username -->
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required />
+
+      <!-- Age -->
+      <label for="age">Age:</label>
+      <input type="number" id="age" name="age" required />
+
+      <!-- Gender -->
+      <label for="gender">Gender:</label>
+      <select id="gender" name="gender" required>
+        <option value="">Select</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+
+      <!-- Income -->
+      <label for="income">Income:</label>
+      <input type="number" id="income" name="income" required />
+
+      <!-- Total Expense -->
+      <label for="totalExpense">Total Expense:</label>
+      <input type="number" id="totalExpense" name="totalExpense" required />
+
+      <!-- Debt -->
+      <label for="debt">Debt:</label>
+      <input type="number" id="debt" name="debt" required />
+
+      <!-- Credit Score -->
+      <label for="creditScore">Credit Usability Score:</label>
+      <input type="number" id="creditScore" name="creditScore" required />
+
+      <!-- Savings -->
+      <label for="savings">Savings:</label>
+      <input type="number" id="savings" name="savings" required />
+
+      <!-- Buttons -->
+      <button type="button" onclick="handleSubmit()">Submit</button>
+      <button type="button" onclick="handleReset()">Reset</button>
+    </form>
+  </div>
+
+  <div class="container" id="summaryPage" style="display: none;">
+    <h1>Summary</h1>
+    <div id="summaryContent"></div>
+    <button type="button" onclick="goBack()">Go Back</button>
+  </div>
+
+  <script>
+    function handleReset() {
+      document.getElementById('financialForm').reset();
+    }
+
+    function handleSubmit() {
+      const form = document.getElementById('financialForm');
+      const formData = new FormData(form);
+      const data = {};
+      formData.forEach((value, key) => {
+        data[key] = value;
+      });
+
+      // Calculate risk score and suggestions
+      const riskScore = calculateRiskScore(data);
+      const suggestions = generateSuggestions(data);
+
+      // Display summary page
+      const summaryContent = document.getElementById('summaryContent');
+      summaryContent.innerHTML = `
+        <p><strong>Username:</strong> ${data.username}</p>
+        <p><strong>Age:</strong> ${data.age}</p>
+        <p><strong>Gender:</strong> ${data.gender}</p>
+        <p><strong>Income:</strong> ${data.income}</p>
+        <p><strong>Total Expense:</strong> ${data.totalExpense}</p>
+        <p><strong>Debt:</strong> ${data.debt}</p>
+        <p><strong>Credit Usability Score:</strong> ${data.creditScore}</p>
+        <p><strong>Savings:</strong> ${data.savings}</p>
+        <p><strong>Risk Score:</strong> ${riskScore}</p>
+        <p><strong>Suggestions:</strong> ${suggestions}</p>
+      `;
+      document.getElementById('financialForm').style.display = 'none';
+      document.getElementById('summaryPage').style.display = 'block';
+    }
+
+    function goBack() {
+      document.getElementById('summaryPage').style.display = 'none';
+      document.getElementById('financialForm').style.display = 'block';
+    }
+
+    function calculateRiskScore(data) {
+      // Example risk score calculation logic
+      const expenseToIncomeRatio = data.totalExpense / data.income;
+      const debtToIncomeRatio = data.debt / data.income;
+      return Math.round((expenseToIncomeRatio + debtToIncomeRatio) * 100);
+    }
+
+    function generateSuggestions(data) {
+      // Example suggestions based on user data
+      const suggestions = [];
+      if (data.totalExpense > data.income * 0.5) {
+        suggestions.push("Consider reducing your expenses.");
+      }
+      if (data.debt > data.income * 0.3) {
+        suggestions.push("Work on reducing your debt.");
+      }
+      if (data.savings < data.income * 0.2) {
+        suggestions.push("Try to increase your savings.");
+      }
+      return suggestions.length > 0 ? suggestions.join(" ") : "Your financial health looks good!";
+    }
+  </script>
+</body>
+</html>
