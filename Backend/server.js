@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const analyzer = require("./controllers/fileController");
+const multer = require("multer");
 dotenv.config();
 
 const app = express();
@@ -32,17 +34,7 @@ const upload = multer({
 
 app.use("/api", require("./routes/riskRoutes"));
 
-// Use .analyzer for the controller
-app.get(
-  "/api/chartPrediction",
-  require("./controllers/fileController").analyzer
-);
-
-app.post(
-  "/api/chartPrediction",
-  upload.single("image"),
-  require("./controllers/fileController").analyzer
-);
+app.post("/api/chartPrediction", upload.single("image"), analyzer);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

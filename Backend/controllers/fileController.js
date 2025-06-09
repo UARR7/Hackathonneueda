@@ -1,5 +1,6 @@
 const fs = require("fs");
 const axios = require("axios");
+
 const analyzer = async (req, res) => {
   try {
     if (!req.file) {
@@ -21,7 +22,7 @@ const analyzer = async (req, res) => {
 };
 
 async function analyzeImageWithGemini(base64Image, mimeType) {
-  const STOCK_CHART_ANALYSIS_PROMPT = `
+  const prompt = `
 You are a professional financial analyst with expertise in technical analysis and macroeconomic factors. Analyze the provided image and follow these instructions:
 
 ## VALIDATION REQUIREMENTS:
@@ -155,8 +156,31 @@ REMEMBER: If the image is not a valid stock chart, immediately return the valida
         },
       }
     );
+    // Parse Gemini's response as JSON
+    let rawText = response.data.candidates[0].content.parts[0].text.trim();
+
+    // Remove markdown code block if present
+    if (rawText.startsWith("```")) {
+      rawText = rawText
+        .replace(/^```[a-zA-Z]*\n?/, "")
+        .replace(/```$/, "")
+        .trim();
+    }
+
+    let analysisJson;
+    try {
+      analysisJson = JSON.parse(rawText);
+    } catch (e) {
+      // fallback: try to extract JSON if Gemini returns it as a code block
+      const match = rawText.match(/{[\s\S]*}/);
+      if (match) {
+        analysisJson = JSON.parse(match[0]);
+      } else {
+        throw new Error("Gemini response is not valid JSON");
+      }
+    }
     return {
-      analysis: response.data.candidates[0].content.parts[0].text,
+      analysis: analysisJson,
       success: true,
     };
   } catch (error) {
@@ -165,6 +189,4 @@ REMEMBER: If the image is not a valid stock chart, immediately return the valida
   }
 }
 
-module.exports = {
-  analyzer,
-};
+module.exports = analyzer;
