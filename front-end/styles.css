@@ -1,23 +1,348 @@
+/* Modern Financial Form Styling */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .container {
-  max-width: 600px;
-  margin: auto;
-  padding: 20px;
+  max-width: 650px;
+  width: 90%;
+  margin: 20px auto;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+h1 {
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 30px;
+  font-size: 2.2em;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 form {
   display: flex;
   flex-direction: column;
+  gap: 20px;
 }
 
 label {
-  margin-top: 10px;
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 5px;
+  font-size: 1.1em;
+  display: block;
 }
 
-input, select, button {
-  margin-top: 5px;
-  padding: 10px;
+input, select {
+  padding: 15px 20px;
+  border: 2px solid #e0e6ed;
+  border-radius: 12px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background: #ffffff;
+  color: #2c3e50;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+input:focus, select:focus {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+input:hover, select:hover {
+  border-color: #bdc3c7;
+  transform: translateY(-1px);
 }
 
 button {
-  margin-top: 15px;
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+button[onclick="handleSubmit()"] {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+button[onclick="handleSubmit()"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+}
+
+button[onclick="handleReset()"] {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+}
+
+button[onclick="handleReset()"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(255, 107, 107, 0.4);
+}
+
+button[onclick="goBack()"] {
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(116, 185, 255, 0.3);
+}
+
+button[onclick="goBack()"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(116, 185, 255, 0.4);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Summary Page Styling */
+#summaryContent {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 15px;
+  border-left: 5px solid #667eea;
+  margin-bottom: 25px;
+}
+
+#summaryContent p {
+  margin: 12px 0;
+  font-size: 1.1em;
+  color: #2c3e50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+#summaryContent p:last-child {
+  border-bottom: none;
+}
+
+#summaryContent strong {
+  color: #667eea;
+  min-width: 180px;
+}
+
+/* Form Field Groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Input animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.container {
+  animation: fadeInUp 0.6s ease;
+}
+
+/* Enhanced Responsive Design */
+/* Large screens */
+@media (min-width: 1200px) {
+  .container {
+    max-width: 700px;
+    padding: 50px;
+  }
+  
+  h1 {
+    font-size: 2.5em;
+  }
+}
+
+/* Tablet landscape */
+@media (max-width: 1024px) {
+  .container {
+    max-width: 90%;
+    padding: 35px;
+  }
+}
+
+/* Tablet portrait */
+@media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+  
+  .container {
+    padding: 25px 20px;
+    margin: 10px auto;
+    width: 95%;
+    border-radius: 15px;
+  }
+  
+  h1 {
+    font-size: 1.8em;
+    margin-bottom: 25px;
+  }
+  
+  form {
+    gap: 15px;
+  }
+  
+  input, select {
+    padding: 12px 15px;
+    font-size: 16px; /* Prevents zoom on iOS */
+    border-radius: 10px;
+  }
+  
+  button {
+    padding: 14px 25px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+  
+  #summaryContent {
+    padding: 20px;
+    border-radius: 12px;
+  }
+  
+  #summaryContent p {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+    padding: 12px 0;
+    font-size: 1em;
+  }
+  
+  #summaryContent strong {
+    min-width: auto;
+    font-size: 0.9em;
+  }
+}
+
+/* Mobile landscape */
+@media (max-width: 640px) and (orientation: landscape) {
+  .container {
+    padding: 20px 15px;
+    margin: 5px auto;
+  }
+  
+  h1 {
+    font-size: 1.6em;
+    margin-bottom: 20px;
+  }
+  
+  form {
+    gap: 12px;
+  }
+}
+
+/* Small mobile phones */
+@media (max-width: 480px) {
+  .container {
+    padding: 20px 15px;
+    margin: 5px auto;
+    width: 98%;
+    border-radius: 12px;
+  }
+  
+  h1 {
+    font-size: 1.6em;
+    margin-bottom: 20px;
+  }
+  
+  label {
+    font-size: 1em;
+    margin-bottom: 8px;
+  }
+  
+  input, select {
+    padding: 14px 12px;
+    font-size: 16px;
+    border-radius: 8px;
+  }
+  
+  button {
+    padding: 16px 20px;
+    font-size: 14px;
+    border-radius: 8px;
+    letter-spacing: 0.5px;
+  }
+  
+  form {
+    gap: 12px;
+  }
+  
+  #summaryContent {
+    padding: 15px;
+    border-radius: 10px;
+  }
+  
+  #summaryContent p {
+    font-size: 0.95em;
+    padding: 10px 0;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 320px) {
+  .container {
+    padding: 15px 10px;
+    margin: 2px auto;
+  }
+  
+  h1 {
+    font-size: 1.4em;
+  }
+  
+  input, select, button {
+    font-size: 14px;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #667eea;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #764ba2;
 }
