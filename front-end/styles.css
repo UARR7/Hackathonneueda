@@ -123,12 +123,41 @@ button:active {
 }
 
 /* Summary Page Styling */
+#summaryPage {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 #summaryContent {
   background: #f8f9fa;
   padding: 25px;
   border-radius: 15px;
   border-left: 5px solid #667eea;
   margin-bottom: 25px;
+}
+
+/* Hide entire form container (including heading) when summary is shown */
+.container:has(#financialForm) {
+  display: block;
+}
+
+/* When summary page is visible, hide the form container completely */
+body:has(#summaryPage:not([style*="display: none"])) .container:has(#financialForm) {
+  display: none !important;
+}
+
+/* Fallback for browsers that don't support :has() */
+#summaryPage:not([style*="display: none"]) ~ .container:has(form) {
+  display: none !important;
+}
+
+/* Additional fallback - hide the first container when summary is visible */
+#summaryPage[style*="display: block"] ~ .container:first-of-type,
+#summaryPage:not([style*="display: none"]) ~ .container:first-of-type {
+  display: none !important;
 }
 
 #summaryContent p {
