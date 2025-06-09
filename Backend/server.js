@@ -31,6 +31,18 @@ const upload = multer({
 });
 
 app.use("/api", require("./routes/riskRoutes"));
-app.get("/api/chartPrediction", require("./controllers/fileController"));
+
+// Use .analyzer for the controller
+app.get(
+  "/api/chartPrediction",
+  require("./controllers/fileController").analyzer
+);
+
+app.post(
+  "/api/chartPrediction",
+  upload.single("image"),
+  require("./controllers/fileController").analyzer
+);
+
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

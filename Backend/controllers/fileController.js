@@ -3,14 +3,11 @@ const analyzer = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: "No image uploaded" });
     }
-
     // Convert image to base64
     const imageBuffer = fs.readFileSync(req.file.path);
     const base64Image = imageBuffer.toString("base64");
-
     // Get file mime type
     const mimeType = req.file.mimetype;
-    // Send to Gemini Vision API
     const analysis = await analyzeImageWithGemini(base64Image, mimeType);
     // Clean up uploaded file
     fs.unlinkSync(req.file.path);
@@ -156,7 +153,6 @@ REMEMBER: If the image is not a valid stock chart, immediately return the valida
         },
       }
     );
-
     return {
       analysis: response.data.candidates[0].content.parts[0].text,
       success: true,
