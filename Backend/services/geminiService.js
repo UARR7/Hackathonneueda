@@ -1,7 +1,5 @@
-
-
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-require('dotenv').config();
+const { GoogleGenerativeAI } = require("@google/generative-ai");
+require("dotenv").config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -32,18 +30,20 @@ Credit Utilization: ${profile.creditUtilization}
 
     // ✅ Remove Markdown code block formatting like ```json ... ```
     text = text.trim();
-    if (text.startsWith('```')) {
-      text = text.replace(/^```(?:json)?/, '').replace(/```$/, '').trim();
+    if (text.startsWith("```")) {
+      text = text
+        .replace(/^```(?:json)?/, "")
+        .replace(/```$/, "")
+        .trim();
     }
 
-    console.log('Cleaned AI response:', text);
+    console.log("Cleaned AI response:", text);
 
     const parsed = JSON.parse(text);
     return parsed;
-
   } catch (err) {
-    console.error('Gemini SDK error:', err.message || err);
-    throw new Error('AI service failure');
+    console.error("Gemini SDK error:", err.message || err);
+    throw new Error("AI service failure");
   }
 }
 
