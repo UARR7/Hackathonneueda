@@ -1,3 +1,5 @@
+const fs = require("fs");
+const axios = require("axios");
 const analyzer = async (req, res) => {
   try {
     if (!req.file) {
@@ -162,3 +164,7 @@ REMEMBER: If the image is not a valid stock chart, immediately return the valida
     throw error;
   }
 }
+
+module.exports = {
+  analyzer,
+};
