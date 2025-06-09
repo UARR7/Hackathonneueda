@@ -1,77 +1,58 @@
-import React, { useEffect, useRef } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 function SummaryPage() {
   const location = useLocation();
-  console.log('Rendering SummaryPage with data:', location.state?.expenseBreakdown);
-  const expenseBreakdown = location.state?.expenseBreakdown || {}; // Fallback to an empty object
-  const canvasRef = useRef(null);
-
-  const totalExpense = Object.values(expenseBreakdown).reduce((acc, curr) => acc + curr, 0);
+  const navigate = useNavigate();
+  const [profileData, setProfileData] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    if (Object.keys(expenseBreakdown).length === 0) {
-      console.warn('No expense breakdown data available.');
-      return; // Exit early if no data
-    }
+    const fetchProfileData = async () => {
+      const id = location.state?.id; // Get the ID passed from FormPage
+      if (!id) {
+        setErrorMessage('No profile ID provided.');
+        return;
+      }
 
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'];
-    let startAngle = 0;
+      try {
+        const response = await fetch(`http://localhost:5001/api/profile/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch profile data from backend');
+        }
+        const data = await response.json();
+        setProfileData(data);
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+        setErrorMessage('An error occurred while fetching profile data. Please try again later.');
+      }
+    };
 
-    Object.values(expenseBreakdown).forEach((value, index) => {
-      const sliceAngle = (value / totalExpense) * 2 * Math.PI;
-      ctx.beginPath();
-      ctx.moveTo(150, 150); // Center of the pie chart
-      ctx.arc(150, 150, 100, startAngle, startAngle + sliceAngle);
-      ctx.closePath();
-      ctx.fillStyle = colors[index];
-      ctx.fill();
-      startAngle += sliceAngle;
-    });
+    fetchProfileData();
+  }, [location.state]);
 
-    // Add labels
-    let labelAngle = 0;
-    Object.keys(expenseBreakdown).forEach((key, index) => {
-      const sliceAngle = (expenseBreakdown[key] / totalExpense) * 2 * Math.PI;
-      const labelX = 150 + Math.cos(labelAngle + sliceAngle / 2) * 120;
-      const labelY = 150 + Math.sin(labelAngle + sliceAngle / 2) * 120;
-      ctx.fillStyle = '#000';
-      ctx.font = '12px Arial';
-      ctx.fillText(key, labelX, labelY);
-      labelAngle += sliceAngle;
-    });
-  }, [expenseBreakdown, totalExpense]);
+  if (errorMessage) {
+    return <div className="container" style={{ color: 'red' }}>{errorMessage}</div>;
+  }
+
+  if (!profileData) {
+    return <div className="container">Loading...</div>;
+  }
+
+  const { id, name, income, expenses, debt, savings, creditUtilization, riskScore, suggestions } = profileData;
 
   return (
     <div className="container" style={{ backgroundColor: 'blue', color: 'white', padding: '20px' }}>
       <h1>Expense Summary</h1>
-      <div>
-        <h2>Total Expense: ${totalExpense.toFixed(2)}</h2>
-        <table border="1" style={{ width: '100%', textAlign: 'left' }}>
-          <thead>
-            <tr>
-              <th>Category</th>
-              <th>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries(expenseBreakdown).map(([key, value]) => (
-              <tr key={key}>
-                <td>{key}</td>
-                <td>${value.toFixed(2)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {Object.keys(expenseBreakdown).length > 0 ? (
-        <canvas ref={canvasRef} width="300" height="300"></canvas>
-      ) : (
-        <p>No data available to display.</p>
-      )}
-      <p>Suggestion: Suggestion</p>
+      <p><strong>Username:</strong> {name}</p>
+      <p><strong>Income:</strong> {income}</p>
+      <p><strong>Total Expense:</strong> {expenses}</p>
+      <p><strong>Debt:</strong> {debt}</p>
+      <p><strong>Credit Usability Score:</strong> {creditUtilization}</p>
+      <p><strong>Savings:</strong> {savings}</p>
+      <p><strong>Risk Score:</strong> {riskScore}</p>
+      <p><strong>Suggestions:</strong> {suggestions?.join(', ') || 'No suggestions available.'}</p>
+      <button onClick={() => navigate('/')}>Go Back</button>
     </div>
   );
 }
